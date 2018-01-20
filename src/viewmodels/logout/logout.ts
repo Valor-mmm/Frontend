@@ -1,9 +1,9 @@
 import {inject} from 'aurelia-framework'
 import {EventAggregator} from 'aurelia-event-aggregator';
-import {AuthRole, LoginMessage} from "../../../services/authMessages";
+import {LoginMessage} from "../../services/authMessages";
 
 @inject(EventAggregator)
-export class LoginAdmin {
+export class Logout {
 
   eventAggregator: EventAggregator;
 
@@ -11,8 +11,8 @@ export class LoginAdmin {
     this.eventAggregator = ea;
   }
 
-  login() {
-    this.eventAggregator.publish(new LoginMessage(AuthRole.ADMIN, true));
+  logout() {
+    this.eventAggregator.publish(new LoginMessage(null, false));
   }
 
 }
