@@ -20,6 +20,12 @@
             </div>
           </div>
           <button type="submit" class="ui blue submit button">Login</button>
+
+          <section class="ui divided list" if.bind="controller.errors">
+            <div class="item error" repeat.for="error of controller.errors">
+              ${error.message}
+            </div>
+          </section>
         </form>
       </article>
       <div class="divider-column">

@@ -11,3 +11,7 @@ body {
   width: 75% !important;
   margin-top: 10% !important;
 }
+
+.error {
+  color: red;
+}
