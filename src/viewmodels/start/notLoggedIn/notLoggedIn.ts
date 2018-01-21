@@ -7,6 +7,9 @@ import {UserService} from "../../../services/svc/userService";
 @inject(EventAggregator, UserService)
 export class NotLoggedIn {
 
+  email: string;
+  password: string;
+
   eventAggregator: EventAggregator;
   userService: UserService;
 
@@ -16,8 +19,7 @@ export class NotLoggedIn {
   }
 
   login() {
-    this.userService.authenticate('maximum.effort@dp.com', 'francis')
-    //this.eventAggregator.publish(new LoginMessage(AuthRole.USER, true));
+    this.userService.authenticate(this.email, this.password);
   }
 
 }

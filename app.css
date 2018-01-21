@@ -1,0 +1,13 @@
+body {
+  padding: 1em;
+}
+
+.divider-column {
+  position: relative;
+  padding: 0 !important;
+}
+
+.welcome-segment {
+  width: 75% !important;
+  margin-top: 10% !important;
+}
