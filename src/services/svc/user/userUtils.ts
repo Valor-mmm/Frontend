@@ -1,6 +1,10 @@
-import {ITweet} from "../tweetService";
+import {ITweet} from "../tweet/tweetUtils";
 
 export interface IUser {
+  id: string,
+  updatedAt: string,
+  createdAt: string
+
   username: string,
   email: string,
   password: string,

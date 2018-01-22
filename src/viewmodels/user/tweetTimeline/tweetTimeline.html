@@ -1,3 +1,17 @@
 <template>
-  Tweet Timeline
+  <article class="ui raised three column segment container grid">
+    <article id="followersContent" class="ui four wide column">
+      <compose view-model="../friends/friendsSidebar"></compose>
+    </article>
+    <article id="tweetTimelineContent" class="ui eight wide column">
+      <article repeat.for="tweet of tweets" class="ui card">
+        <section if.bind="tweet.imgId" class="image">
+          <img src="${getImgUrlForTweet(tweet)}">
+        </section>
+      </article>
+    </article>
+    <article id="actionTimelineContent" class="ui four wide column">
+      <compose view-model="../actionTimeline/actionTimeline"></compose>
+    </article>
+  </article>
 </template>

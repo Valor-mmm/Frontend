@@ -71,4 +71,8 @@ export class UserService {
       throw exception;
     }
   }
+
+  async getUsersById() {
+
+  }
 }
