@@ -15,3 +15,8 @@ body {
 .error {
   color: red;
 }
+
+.signup-segment {
+  width: 40% !important;
+  margin-top: 15% !important;
+}

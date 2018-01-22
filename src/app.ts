@@ -1,13 +1,13 @@
 import {inject, Aurelia} from 'aurelia-framework';
 import {EventAggregator} from 'aurelia-event-aggregator';
-import {ILoginMessage, AuthRole, LoginMessage} from "./services/authMessages";
+import {ILoginMessage, AuthRole, LoginMessage, FailedLogin} from "./services/authMessages";
 
 @inject(Aurelia, EventAggregator)
 export class App {
 
   router;
 
-  constructor(au, ea) {
+  constructor(au: Aurelia, ea: EventAggregator) {
     ea.subscribe(LoginMessage, (msg: ILoginMessage) => {
       if (msg.success === true) {
         if (msg.role === AuthRole.USER) {
@@ -24,6 +24,7 @@ export class App {
       } else {
         au.setRoot('app').then(() => {
             this.router.navigateToRoute('twittr');
+            ea.publish(new FailedLogin(msg.role, msg.message));
           }
         );
       }

@@ -26,6 +26,10 @@
               ${error.message}
             </div>
           </section>
+
+          <section if.bind="errorMessage" class="ui padded section">
+            <p class="error">${errorMessage}</p>
+          </section>
         </form>
       </article>
       <div class="divider-column">

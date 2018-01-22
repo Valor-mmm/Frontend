@@ -19,6 +19,17 @@ export class LoginMessage implements ILoginMessage{
     this.success = success;
   }
 
+}
+
+export class FailedLogin {
+
+  role: AuthRole;
+  message?: string;
+
+  constructor(role: AuthRole, message: string) {
+    this.role = role;
+    this.message = message;
+  }
 
 }
 

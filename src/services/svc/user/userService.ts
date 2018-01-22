@@ -1,8 +1,8 @@
 import {inject, LogManager} from 'aurelia-framework';
 import {EventAggregator} from 'aurelia-event-aggregator'
-import {FetchClient} from "../FetchClient";
-import FetchConfig from "../fetchConfigLocal";
-import {AuthRole, LoginMessage} from "../authMessages";
+import {FetchClient} from "../../FetchClient";
+import FetchConfig from "../../fetchConfigLocal";
+import {AuthRole, LoginMessage} from "../../authMessages";
 
 const logger = LogManager.getLogger('UserService');
 
@@ -31,12 +31,13 @@ export class UserService {
       const authResult = await this.fetchClient.post(authUrl, authBody);
       if (authResult.success && authResult.token) {
         FetchClient.setAuthToken(authResult.token);
-        this.eventAggregator.publish(new LoginMessage(AuthRole.ADMIN, true));
+        this.eventAggregator.publish(new LoginMessage(AuthRole.USER, true));
       } else {
         const loginEvent = new LoginMessage(AuthRole.USER, false);
         if (authResult.message) {
           loginEvent.message = authResult.message;
         }
+        this.eventAggregator.publish(loginEvent);
       }
     } catch (err) {
       if (err) {
@@ -48,6 +49,26 @@ export class UserService {
       }
 
       this.eventAggregator.publish(loginEvent);
+    }
+  }
+
+  async signUp(username: string, email: string, password: string, firstName: string, lastName: string) {
+    const signupBody = {
+      username: username,
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName
+    };
+
+    try {
+      await this.fetchClient.post(this.fetchConfig.usersPart, signupBody);
+
+      await this.authenticate(email, password);
+      return true;
+    } catch (exception) {
+      logger.error('Exception during signup.', exception);
+      throw exception;
     }
   }
 }

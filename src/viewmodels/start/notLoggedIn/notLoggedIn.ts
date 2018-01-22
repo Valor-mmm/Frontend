@@ -1,7 +1,8 @@
 import {inject, NewInstance, LogManager} from 'aurelia-framework'
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {ValidationRules, ValidationController, validateTrigger} from "aurelia-validation";
-import {UserService} from "../../../services/svc/userService";
+import {UserService} from "../../../services/svc/user/userService";
+import {FailedLogin} from "../../../services/authMessages";
 
 const logger = LogManager.getLogger('NotLoggedIn');
 
@@ -10,15 +11,25 @@ export class NotLoggedIn {
 
   email: string = '';
   password: string = '';
+  errorMessage: string;
 
-  eventAggregator: EventAggregator;
   userService: UserService;
   controller: ValidationController;
 
   constructor(vc: ValidationController, ea: EventAggregator, userService: UserService) {
     this.controller = vc;
-    this.eventAggregator = ea;
     this.userService = userService;
+
+    ea.subscribe(FailedLogin, (result: FailedLogin) => {
+      if (!result) {
+        return;
+      }
+      if (result.message) {
+        this.errorMessage = result.message;
+      } else {
+        this.errorMessage = 'Unknown error during login. Please try again later.'
+      }
+    });
 
     this.controller.validateTrigger = validateTrigger.blur;
     ValidationRules
