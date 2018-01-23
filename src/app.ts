@@ -1,18 +1,24 @@
-import {inject, Aurelia} from 'aurelia-framework';
+import {Aurelia, inject, LogManager} from 'aurelia-framework';
 import {EventAggregator} from 'aurelia-event-aggregator';
-import {ILoginMessage, AuthRole, LoginMessage, FailedLogin} from "./services/authMessages";
+import {AuthRole, FailedLogin, ILoginMessage, LoginMessage} from "./services/authMessages";
+import {UpdateService} from "./services/svc/user/updateService";
 
-@inject(Aurelia, EventAggregator)
+const logger = LogManager.getLogger('app');
+
+@inject(Aurelia, EventAggregator, UpdateService)
 export class App {
 
   router;
 
-  constructor(au: Aurelia, ea: EventAggregator) {
+  constructor(au: Aurelia, ea: EventAggregator, updateService: UpdateService) {
     ea.subscribe(LoginMessage, (msg: ILoginMessage) => {
       if (msg.success === true) {
         if (msg.role === AuthRole.USER) {
           au.setRoot('user').then(() => {
               this.router.navigateToRoute('twTimeline');
+              updateService.fetchUserData(msg.id).catch((err) =>
+                logger.error('Error during update of user.', err)
+              );
             }
           );
         }

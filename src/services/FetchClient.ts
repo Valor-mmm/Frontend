@@ -1,12 +1,18 @@
 import {inject, LogManager} from 'aurelia-framework';
 import {HttpClient, json} from 'aurelia-fetch-client';
 import FetchConfig from "./fetchConfigLocal";
+import {buildQueryString} from 'aurelia-path';
 
 const logger = LogManager.getLogger('FetchClient');
 
-interface QueryObject {
-  name: string,
-  value: any
+export class QueryObject {
+  name: string;
+  value: any;
+
+  constructor(name: string, value: any) {
+    this.name = name;
+    this.value = value;
+  }
 }
 
 @inject(HttpClient, FetchConfig)
@@ -57,16 +63,9 @@ export class FetchClient {
   }
 
 
-  async get(targetUrl, queryObjects: QueryObject[]) {
+  async get(targetUrl, query: any) {
 
-    const params: URLSearchParams = new URLSearchParams();
-    for (const queryObj of queryObjects) {
-      params.append(queryObj.name, queryObj.value);
-    }
-
-    const fetchResult: Response = await this.fetchClient.fetch(targetUrl, {
-      body: params
-    });
+    const fetchResult: Response = await this.fetchClient.fetch(targetUrl + (query ? `?${buildQueryString(query)}` : ''));
 
     if (!fetchResult.ok) {
       this.handleNotOkResponse(fetchResult);

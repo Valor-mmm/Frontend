@@ -7,12 +7,14 @@ export interface ILoginMessage {
   role: AuthRole,
   success: boolean
   message?: string
+  id?: string
 }
 
 export class LoginMessage implements ILoginMessage{
   role: AuthRole;
   success: boolean;
   message?: string;
+  id?: string;
 
   constructor(role: AuthRole, success: boolean) {
     this.role = role;
