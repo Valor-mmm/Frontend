@@ -2,14 +2,18 @@ import {inject, LogManager} from 'aurelia-framework';
 import {UserService} from "./userService";
 import {TweetService} from "../tweet/tweetService";
 import {UserData} from "./userData";
+import {EventAggregator} from 'aurelia-event-aggregator';
+import {UpdateSuccess} from "../../updateMessages";
 
 const logger = LogManager.getLogger('UpdateService');
 
-@inject(UserService, TweetService, UserData)
+@inject(UserService, TweetService, UserData, EventAggregator)
 export class UpdateService {
 
-  constructor(private userService: UserService, private userData: UserData) {
+  userData: UserData;
 
+  constructor(private userService: UserService,private TweetService: TweetService,  userData: UserData, private ea: EventAggregator) {
+    this.userData = userData;
   }
 
   async fetchUserData(id: string) {
@@ -21,6 +25,7 @@ export class UpdateService {
         logger.error('Error on all users update.', err);
       });
       this.userData.userFriends = await this.userService.getUsersById(this.userData.loggedInUser.following);
+      this.ea.publish(new UpdateSuccess());
       logger.info('Finished fetching user data.');
     } catch (err) {
       logger.error("Error during user data fetch.", err);

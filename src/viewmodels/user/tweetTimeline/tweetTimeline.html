@@ -1,23 +1,23 @@
 <template>
   <article class="ui raised three column segment container grid">
-    <article id="followersContent" class="ui four wide column raised segment">
+    <article id="followersContent" class="ui four wide column segment">
       <compose view-model="../friends/friendsSidebar"></compose>
     </article>
-    <article id="tweetTimelineContent" class="ui eight wide column">
-      <div class="header">Timeline of ${username}</div>
-      <article repeat.for="tweet of tweets" class="ui card">
-        <section if.bind="tweet.imgId" class="image">
-          <img class="image" src="${getImgUrlForTweet(tweet)}">
-        </section>
-        <section class="content">
-          <a class="header" href="#">#{getUsernameForTweet(tweet)}</a>
-          <div class="description">
-            ${tweet.content}
-          </div>
-        </section>
+    <article id="tweetTimelineContent" class="ui eight wide column piled padded segment">
+        <div class="header">Timeline of ${username}</div>
+        <article repeat.for="tweet of tweets" class="ui centered card">
+          <section if.bind="tweet.imgId" class="image">
+            <img class="image" src="${getImgUrlForTweet(tweet)}">
+          </section>
+          <section class="content">
+            <a class="header" href="#">${tweet.poster.username}</a>
+            <div class="description">
+              ${tweet.content}
+            </div>
+          </section>
+        </article>
       </article>
-    </article>
-    <article id="actionTimelineContent" class="ui four wide column raised segment">
+    <article id="actionTimelineContent" class="ui four wide column segment">
       <compose view-model="../actionTimeline/actionTimeline"></compose>
     </article>
   </article>

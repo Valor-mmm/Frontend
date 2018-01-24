@@ -125,11 +125,15 @@ export class UserService {
       throw errMsg;
     }
 
-    const tweets: ITweet[] = await this.tweetService.getTweetsById(plainUser.tweets);
     const user: IUser = UserUtils.mapToUser(plainUser);
-    for (const tweet of tweets) {
-      tweet.poster = user;
+    let tweets: ITweet[] = [];
+    if (plainUser.tweets.length > 0) {
+      tweets = await this.tweetService.getTweetsById(plainUser.tweets);
+      for (const tweet of tweets) {
+        tweet.poster = user;
+      }
     }
+
     user.tweets = tweets;
     return user;
   }
