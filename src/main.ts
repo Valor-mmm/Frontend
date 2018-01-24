@@ -1,12 +1,12 @@
 import {Aurelia} from 'aurelia-framework'
 import environment from './environment';
-import {UserData} from "./services/svc/user/userData";
 
 export function configure(aurelia: Aurelia) {
   aurelia.use
     .standardConfiguration()
     .feature('resources')
     .plugin('aurelia-validation');
+    //.plugin('aurelia-dialog');
 
   if (environment.debug) {
     aurelia.use.developmentLogging();
@@ -15,8 +15,6 @@ export function configure(aurelia: Aurelia) {
   if (environment.testing) {
     aurelia.use.plugin('aurelia-testing');
   }
-
-  aurelia.container.registerSingleton(UserData);
 
   aurelia.start().then(() => aurelia.setRoot());
 }

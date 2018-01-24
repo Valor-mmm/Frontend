@@ -20,3 +20,7 @@ body {
   width: 40% !important;
   margin-top: 15% !important;
 }
+
+.unfollow-button:hover {
+  background-color: red !important;
+}

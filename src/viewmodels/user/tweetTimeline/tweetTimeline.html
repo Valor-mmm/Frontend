@@ -1,24 +1,63 @@
 <template>
-  <article class="ui raised three column segment container grid">
-    <article id="followersContent" class="ui four wide column segment">
-      <compose view-model="../friends/friendsSidebar"></compose>
+  <article class="ui raised three column segment container relaxed grid">
+    <article id="followersContent" class="ui three wide left floated column">
+      <button class="ui primary button" click.delegate="toOwnTimeline()">To Your Timeline</button>
+      <article class="ui segment">
+        <compose view-model="../friends/friendsSidebar"></compose>
+      </article>
     </article>
     <article id="tweetTimelineContent" class="ui eight wide column piled padded segment">
-        <div class="header">Timeline of ${username}</div>
-        <article repeat.for="tweet of tweets" class="ui centered card">
-          <section if.bind="tweet.imgId" class="image">
-            <img class="image" src="${getImgUrlForTweet(tweet)}">
-          </section>
-          <section class="content">
-            <a class="header" href="#">${tweet.poster.username}</a>
-            <div class="description">
-              ${tweet.content}
-            </div>
-          </section>
-        </article>
+      <section if.bind="creationError">
+        <div class="ui big red label">${creationError}</div>
+        <section class="ui divided list" if.bind="validationController.errors">
+          <div class="item error" repeat.for="error of controller.errors">
+            ${error.message}
+          </div>
+        </section>
+      </section>
+      <div class="ui big blue ribbon label">${timelineDescription.title}</div>
+      <article repeat.for="tweet of tweets" class="ui centered card">
+        <section if.bind="tweet.image" class="image">
+          <img class="image" src.one-way="getImgUrlForTweet(tweet)">
+        </section>
+        <section class="content">
+          <a class="header" href="#">${tweet.poster.username}</a>
+          <div class="description">
+            ${tweet.content}
+          </div>
+        </section>
       </article>
-    <article id="actionTimelineContent" class="ui four wide column segment">
-      <compose view-model="../actionTimeline/actionTimeline"></compose>
     </article>
+    <article id="actionTimelineContent" class="ui three wide right floated column">
+      <button type="button" class="ui primary button" onclick="$('#createTweetDialog').modal('show')">New Tweet</button>
+      <article class="ui segment">
+        <compose view-model="../actionTimeline/actionTimeline"></compose>
+      </article>
+    </article>
+  </article>
+
+  <article id="createTweetDialog" class="ui modal">
+    <i class="close icon"></i>
+    <div class="ui header">Crate an awesome tweet.</div>
+    <form class="ui form">
+      <section class="content">
+        <div class="ui field">
+          <input class="ui primary button" type="file" accept="image/*" files.bind="image" name="Add an Image" >
+        </div>
+        <div class="ui field">
+          <label class="ui teal label">What do you want to say?</label>
+          <textarea value.bind="content" rows="5" cols="35" class="ui left labeled input" placeholder="But not longer than 140 chars ;)"></textarea>
+        </div>
+      </section>
+      <div class="actions">
+        <button class="ui black deny button">
+          I changed my mind
+        </button>
+        <button class="ui positive right labeled icon button" click.delegate="createTweet()">
+          Post that!
+          <i class="checkmark icon"></i>
+        </button>
+      </div>
+    </form>
   </article>
 </template>

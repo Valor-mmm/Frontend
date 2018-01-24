@@ -31,7 +31,7 @@ export class UserService {
     const authUrl = this.fetchConfig.usersPart + this.fetchConfig.authPart;
 
     try {
-      const authResult = await this.fetchClient.post(authUrl, authBody);
+      const authResult = await this.fetchClient.postJSON(authUrl, authBody);
       if (authResult.success && authResult.token) {
         this.handleAuthSuccess(authResult);
       } else {
@@ -77,7 +77,7 @@ export class UserService {
     };
 
     try {
-      await this.fetchClient.post(this.fetchConfig.usersPart, signupBody);
+      await this.fetchClient.postJSON(this.fetchConfig.usersPart, signupBody);
 
       await this.authenticate(email, password);
       return true;

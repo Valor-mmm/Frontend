@@ -28,7 +28,7 @@ export class AdminService {
 
     const authUrl = this.fetchConfig.adminsPart + this.fetchConfig.authPart;
 
-    this.fetchClient.post(authUrl, authBody).then(authResult => {
+    this.fetchClient.postJSON(authUrl, authBody).then(authResult => {
       if (authResult.success && authResult.token) {
         FetchClient.setAuthToken(authResult.token);
         this.eventAggregator.publish(new LoginMessage(AuthRole.ADMIN, true));

@@ -46,11 +46,20 @@ export class FetchClient {
   }
 
 
-  async post(targetUrl, object) {
+  async postJSON(targetUrl, object) {
+    return this.sendPost(targetUrl, json(object))
+  }
+
+  async postForm(targetUrl, formData: FormData) {
+    return this.sendPost(targetUrl, formData);
+  }
+
+  private async sendPost(targetUrl, body) {
     FetchClient.logRequestStart(targetUrl);
+
     const fetchResult: Response = await this.fetchClient.fetch(targetUrl, {
       method: 'post',
-      body: json(object)
+      body: body
     });
 
     if (!fetchResult.ok) {
@@ -63,17 +72,44 @@ export class FetchClient {
   }
 
 
+  async getText(targetUrl, query: any) {
+    const fetchResult: Response = await this.sendGet(targetUrl, query);
+
+    let result;
+    try {
+      result = await fetchResult.text();
+    } catch (error){
+      logger.error('Could not fetch result as text', fetchResult, error);
+      throw error;
+    }
+    FetchClient.logSuccess(targetUrl, fetchResult.status);
+    return result;
+  }
+
+
   async get(targetUrl, query: any) {
 
+    const fetchResult: Response = await this.sendGet(targetUrl, query);
+
+    let result;
+    try {
+      result = await fetchResult.json();
+    } catch (error){
+      logger.error('Could not fetch result as json', fetchResult, error);
+      throw error;
+    }
+    FetchClient.logSuccess(targetUrl, fetchResult.status);
+    return result;
+  }
+
+  async sendGet(targetUrl: string, query:any) {
     const fetchResult: Response = await this.fetchClient.fetch(targetUrl + (query ? `?${buildQueryString(query)}` : ''));
 
     if (!fetchResult.ok) {
       this.handleNotOkResponse(fetchResult);
     }
 
-    const result = await fetchResult.json();
-    FetchClient.logSuccess(targetUrl, fetchResult.status);
-    return result;
+    return fetchResult;
   }
 
 

@@ -1,3 +1,13 @@
 <template>
-  Friends
+  <article>
+    <div class="ui header">Your Friends:</div>
+    <article class="ui items">
+      <section class="ui item" repeat.for="friend of friends">
+        <a class="ui ${isActiveFriend(friend) ? 'teal ' : ''}label" click.delegate="viewTimeline(friend)">${friend.username}</a>
+        <button class="unfollow-button ui circular icon button" click.delegate="unfollow(friend)">
+          <i class="ui remove user icon"></i>
+        </button>
+      </section>
+    </article>
+  </article>
 </template>

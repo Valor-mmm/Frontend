@@ -7,7 +7,7 @@ export interface ITweet {
   createdAt: string
 
   content: string,
-  imgId?: string,
+  image?: string,
   poster: IUser,
   upvotes: number
 
@@ -22,7 +22,7 @@ export class Tweet implements ITweet {
   poster: IUser;
   upvotes: number;
 
-  imgId?: string;
+  image?: string;
 
   constructor(id: string, updatedAt: string, createdAt: string, content: string, poster: IUser, upvotes: number) {
     this.id = id;
