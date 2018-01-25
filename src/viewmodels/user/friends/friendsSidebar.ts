@@ -2,9 +2,10 @@ import {inject, LogManager} from 'aurelia-framework'
 import {UserData} from "../../../services/svc/user/userData";
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {UpdateSuccess} from "../../../services/updateMessages";
-import {IUser} from "../../../services/svc/user/userUtils";
+import {IUser, User} from "../../../services/svc/user/userUtils";
 import {TweetTimeline} from "../tweetTimeline/tweetTimeline";
 import {TimeLineDesc} from "../tweetTimeline/timelineDesc";
+import {Friend} from "./friend";
 
 const logger = LogManager.getLogger('FriendsSidebar');
 
@@ -12,36 +13,91 @@ const logger = LogManager.getLogger('FriendsSidebar');
 export class FriendsSidebar {
 
   userData: UserData;
-  friends: IUser[];
-  activeFriend: IUser;
+  friends: Friend[] = [];
+
 
   constructor(ea: EventAggregator, userData: UserData, private tweetTimeline: TweetTimeline) {
     this.userData = userData;
 
     ea.subscribe(UpdateSuccess, () => {
-      this.friends = this.userData.userFriends;
-      this.activeFriend = null;
+      this.initFreindList();
     });
   }
 
-  isFriendActive(friend: IUser) {
-    if (!friend) {
+  private initFreindList() {
+    for (const user of this.userData.userFriends) {
+      this.friends.push(new Friend(user));
+    }
+  }
+
+  private getFriend(friend: IUser) {
+    const foundFriend = this.friends.find((registeredFriend: Friend) => {
+      return registeredFriend.user.id === friend.id;
+    });
+
+    if (!foundFriend) {
+      return null;
+    }
+    return foundFriend;
+  }
+
+  private isFriendActive(friend: User | Friend) {
+    let foundFriend : Friend;
+    if (friend instanceof User) {
+      foundFriend = this.getFriend(friend);
+    } else {
+      foundFriend = friend;
+    }
+
+    if (!foundFriend) {
       return false;
     }
-    return this.activeFriend.id === friend.id;
+
+    return foundFriend.isActive;
+  }
+
+  private isAtLeastOneFriendActive() {
+    let isActive = false;
+    for (const friend of this.friends) {
+      if (friend.isActive) {
+        isActive = true;
+        return isActive;
+      }
+    }
+    return isActive;
   }
 
   viewTimeline(friend: IUser) {
     if (!friend) {
       return;
     }
-    this.activeFriend = friend;
-    const timeLineDesc: TimeLineDesc = new TimeLineDesc(false, `Timeline of ${friend.username}`);
-    this.tweetTimeline.changeTimeline([friend], timeLineDesc);
+
+    const foundFriend: Friend = this.getFriend(friend);
+
+    if (this.isFriendActive(foundFriend)) {
+      this.tweetTimeline.removeUser(friend);
+      foundFriend.setActive(false);
+      return;
+    }
+
+    if (!this.isAtLeastOneFriendActive()) {
+      foundFriend.setActive(true);
+      const timeLineDesc: TimeLineDesc = new TimeLineDesc(false, `Timeline of ${friend.username}`);
+      this.tweetTimeline.changeTimeline([friend], timeLineDesc);
+      return;
+    }
+
+
   }
 
   unfollow(firend: IUser) {
     // TODO
+  }
+
+  displayFirehose() {
+    this.initFreindList();
+    const timeLineDesc: TimeLineDesc = new TimeLineDesc(false, 'Firehose');
+    this.tweetTimeline.changeTimeline(this.userData.allUsers, timeLineDesc);
   }
 
 }

@@ -29,7 +29,7 @@ export class TweetTimeline {
 
     this.validationController = vc;
     ValidationRules
-      .ensure((t:TweetTimeline) => t.content).required().minLength(1).maxLength(140)
+      .ensure((t: TweetTimeline) => t.content).required().minLength(1).maxLength(140)
       .on(this);
 
     be.propertyObserver(this.userData, 'loggedInUser').subscribe(newValue => {
@@ -48,11 +48,19 @@ export class TweetTimeline {
 
   private updateTimeline(users: IUser[]) {
     logger.info('Updating timeline for users.');
-    if (!users) {
+    if (!Array.isArray(users)) {
       return;
     }
     this.tweets = [];
     this.timelineDescription = new TimeLineDesc(true, 'Your Timeline');
+
+    this.addToCurrent(users);
+  }
+
+  public addToCurrent(users: IUser[]) {
+    if (!Array.isArray(users)) {
+      return;
+    }
 
     for (const user of users) {
       if (user.tweets) {
@@ -60,7 +68,27 @@ export class TweetTimeline {
       }
     }
     this.tweets.sort(TweetTimeline.tweetUpdatedAtComparator);
+  }
 
+  public removeUser(user: IUser) {
+    if (!user || !(Array.isArray(user.tweets))) {
+      return;
+    }
+    this.tweets = this.tweets.filter((tweet: ITweet) => {
+      let notOfUser: boolean = true;
+      for (const userTweet of user.tweets) {
+        if (userTweet.id === tweet.id) {
+          notOfUser = false;
+        }
+      }
+      return notOfUser;
+    });
+
+    this.tweets.sort(TweetTimeline.tweetUpdatedAtComparator);
+
+    if (this.tweets.length <= 0) {
+      this.updateTimeline([this.userData.loggedInUser])
+    }
   }
 
   public toOwnTimeline() {

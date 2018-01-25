@@ -59,6 +59,9 @@ export class UserUtils {
     }
 
     const userObject: User = Object.assign({}, object);
+    if (object._id) {
+      userObject.id = object._id;
+    }
     return userObject;
 
   }
