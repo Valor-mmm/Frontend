@@ -26,6 +26,8 @@ export class TweetTimeline {
   validationController: ValidationController;
   creationError: string;
 
+  oneSelected: boolean;
+
 
   constructor(userData: UserData, be: BindingEngine, vc: ValidationController, private tweetService: TweetService,
               private imageService: ImageService, private eventAggregator: EventAggregator, private userService: UserService) {
@@ -101,6 +103,36 @@ export class TweetTimeline {
     }
   }
 
+  public getSelected() {
+    if (!Array.isArray(this.tweets)) {
+      return [];
+    }
+    return this.tweets.filter((tw: TweetWrapper) => {
+      return tw.isSelected;
+    });
+  }
+
+  public deleteAll() {
+
+  }
+
+  public deleteSelected() {
+
+  }
+
+  public selectCard(tweetWrapper: TweetWrapper) {
+    if (!tweetWrapper.isLoggedInUser) {
+      return;
+    }
+    tweetWrapper.invertSelection();
+    const selected = this.getSelected();
+    if (selected.length <= 0) {
+      this.oneSelected = false;
+    } else {
+      this.oneSelected = true;
+    }
+  }
+
   public removeUser(user: IUser) {
     if (!user || !(Array.isArray(user.tweets))) {
       return;
@@ -149,7 +181,7 @@ export class TweetTimeline {
     }
 
     this.userData.loggedInUser.following.push(user.id);
-    this.userService.updateUser(this.userData.loggedInUser).then( () => {
+    this.userService.updateUser(this.userData.loggedInUser).then(() => {
       logger.info('Successfully following friend', user.username);
     }).catch(err => {
       logger.error('Could not follow friend.', err);
@@ -162,10 +194,12 @@ export class TweetTimeline {
       friend = null;
     }
 
-    const friendIndex = this.userData.loggedInUser.following.indexOf(friend.id);
-    if (friendIndex === -1) {
-      const description: TimeLineDesc = new TimeLineDesc(false, `Timeline of: ${friend.username}`);
-      this.changeTimeline([friend], description);
+    if (friend) {
+      const friendIndex = this.userData.loggedInUser.following.indexOf(friend.id);
+      if (friendIndex === -1) {
+        const description: TimeLineDesc = new TimeLineDesc(false, `Timeline of: ${friend.username}`);
+        this.changeTimeline([friend], description);
+      }
     }
 
     this.eventAggregator.publish(new SwitchToFriend(friend));

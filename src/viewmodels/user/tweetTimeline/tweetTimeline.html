@@ -20,14 +20,17 @@
         </section>
       </section>
       <div class="ui big blue ribbon label">${timelineDescription.title}</div>
-      <article repeat.for="tweetWrapper of tweets" class="ui centered card">
-        <a if.bind="!tweetWrapper.isLoggedInUser && !tweetWrapper.isFriend" click.delegate="followUser(tweetWrapper.tweet.poster)" class="ui floating teal circular label"><i
+      <article repeat.for="tweetWrapper of tweets"
+               class="ui ${tweetWrapper.isSelected ? 'red' : ''} raised link centered card"
+               click.delegate="selectCard(tweetWrapper)">
+        <a if.bind="!tweetWrapper.isLoggedInUser && !tweetWrapper.isFriend"
+           click.delegate="followUser(tweetWrapper.tweet.poster)" class="ui floating teal circular label"><i
           class="ui add user icon"></i></a>
         <section if.bind="tweetWrapper.tweet.image" class="image">
           <img class="image" src="${tweetWrapper.tweet | currencyFormat & async}">
         </section>
         <section class="content">
-            <a class="header" click.delegate="switchToFriend(tweetWrapper.tweet.poster)">${tweetWrapper.tweet.poster.username}</a>
+          <a class="header" click.delegate="switchToFriend(tweetWrapper.tweet.poster)">${tweetWrapper.tweet.poster.username}</a>
           <div class="description">
             ${tweetWrapper.tweet.content}
           </div>
@@ -35,7 +38,15 @@
       </article>
     </article>
     <article id="actionTimelineContent" class="ui three wide right floated column">
-      <button type="button" class="ui primary button" onclick="$('#createTweetDialog').modal('show')">New Tweet</button>
+      <button if.bind="!oneSelected" type="button" class="ui primary button"
+              onclick="$('#createTweetDialog').modal('show')">New Tweet
+      </button>
+      <div if.bind="oneSelected" class="ui buttons">
+        <button type="button" class="ui negative icon button" click.delegate="deleteSelected()"><i
+          class="ui trash icon"></i></button>
+        <div class="or"></div>
+        <button type="button" class="ui negative button" click.delegate="deleteAll()">Delete All</button>
+      </div>
       <article class="ui segment">
         <compose view-model="../actionTimeline/actionTimeline"></compose>
       </article>
