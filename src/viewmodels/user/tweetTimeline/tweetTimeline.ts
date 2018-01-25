@@ -7,10 +7,12 @@ import {TimeLineDesc} from "./timelineDesc";
 import {ValidationController, ValidationRules} from "aurelia-validation";
 import {TweetService} from "../../../services/svc/tweet/tweetService";
 import {ImageService} from "../../../services/svc/imageService";
+import {EventAggregator} from 'aurelia-event-aggregator';
+import {SwitchToFriend} from "../../../services/timelineMessage";
 
 const logger = LogManager.getLogger('TweetTimeline');
 
-@inject(UserData, BindingEngine, ValidationController, TweetService, ImageService)
+@inject(UserData, BindingEngine, ValidationController, TweetService, ImageService, EventAggregator)
 export class TweetTimeline {
 
   tweets: ITweet[];
@@ -23,7 +25,8 @@ export class TweetTimeline {
   creationError: string;
 
 
-  constructor(userData: UserData, be: BindingEngine, vc: ValidationController, private tweetService: TweetService, private imageService: ImageService) {
+  constructor(userData: UserData, be: BindingEngine, vc: ValidationController, private tweetService: TweetService,
+              private imageService: ImageService, private eventAggregator: EventAggregator) {
     this.tweets = [];
     this.userData = userData;
 
@@ -92,20 +95,8 @@ export class TweetTimeline {
   }
 
   public toOwnTimeline() {
+    this.eventAggregator.publish(new SwitchToFriend(null));
     this.updateTimeline([this.userData.loggedInUser]);
-  }
-
-  public getImgUrlForTweet(tweet: ITweet) {
-    if (!tweet.image) {
-      return '';
-    }
-
-    this.imageService.getUrlForImageId(tweet.image).then(url => {
-      return url;
-    }).catch(err => {
-      logger.error('Error during fetch of image url for public id: ' + tweet.image);
-      return '';
-    })
   }
 
   public static tweetUpdatedAtComparator(tweet1: ITweet, tweet2: ITweet) {
@@ -116,6 +107,14 @@ export class TweetTimeline {
       return 0;
     }
     return date1 - date2;
+  }
+
+  public switchToFriend(friend: IUser) {
+    if (friend.id === this.userData.loggedInUser.id) {
+      this.updateTimeline([this.userData.loggedInUser]);
+      friend = null;
+    }
+    this.eventAggregator.publish(new SwitchToFriend(friend));
   }
 
   public async createTweet() {

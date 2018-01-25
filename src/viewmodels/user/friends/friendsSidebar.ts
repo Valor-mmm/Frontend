@@ -6,6 +6,7 @@ import {IUser, User} from "../../../services/svc/user/userUtils";
 import {TweetTimeline} from "../tweetTimeline/tweetTimeline";
 import {TimeLineDesc} from "../tweetTimeline/timelineDesc";
 import {Friend} from "./friend";
+import {SwitchToFriend} from "../../../services/timelineMessage";
 
 const logger = LogManager.getLogger('FriendsSidebar');
 
@@ -22,9 +23,36 @@ export class FriendsSidebar {
     ea.subscribe(UpdateSuccess, () => {
       this.initFreindList();
     });
+
+    ea.subscribe(SwitchToFriend, switchToFriend => {
+      if (!switchToFriend || !switchToFriend.friend) {
+        this.deactivateFriends();
+        return;
+      }
+      if (!this.canSwitchToFriend(switchToFriend.friend)) {
+        return;
+      }
+      this.viewTimeline(switchToFriend.friend);
+    })
+  }
+
+  private deactivateFriends() {
+    for (const friend of this.friends) {
+      friend.setActive(false);
+    }
+  }
+
+  private canSwitchToFriend(friend: IUser) {
+    const foundFriend = this.getFriend(friend);
+
+    if (!foundFriend || foundFriend.isActive) {
+      return false;
+    }
+    return true;
   }
 
   private initFreindList() {
+    this.friends = [];
     for (const user of this.userData.userFriends) {
       this.friends.push(new Friend(user));
     }
