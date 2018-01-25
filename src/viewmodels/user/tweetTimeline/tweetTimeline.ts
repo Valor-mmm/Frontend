@@ -59,7 +59,7 @@ export class TweetTimeline {
     this.tweets = [];
     this.timelineDescription = new TimeLineDesc(true, 'Your Timeline');
 
-    this.addToCurrent(users);
+    this.addToCurrent(users, null);
   }
 
   private isTweetOfLoggedInUser(tweet: ITweet) {
@@ -82,7 +82,7 @@ export class TweetTimeline {
     return false;
   }
 
-  public addToCurrent(users: IUser[]) {
+  public addToCurrent(users: IUser[], newTitle: string) {
     if (!Array.isArray(users)) {
       return;
     }
@@ -95,6 +95,10 @@ export class TweetTimeline {
       }
     }
     this.tweets.sort(TweetTimeline.tweetUpdatedAtComparator);
+
+    if (newTitle) {
+      this.timelineDescription.title = newTitle;
+    }
   }
 
   public removeUser(user: IUser) {

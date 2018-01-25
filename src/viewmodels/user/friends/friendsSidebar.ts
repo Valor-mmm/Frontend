@@ -109,6 +109,7 @@ export class FriendsSidebar {
       return;
     }
 
+
     if (!this.isAtLeastOneFriendActive()) {
       foundFriend.setActive(true);
       const timeLineDesc: TimeLineDesc = new TimeLineDesc(false, `Timeline of ${friend.username}`);
@@ -116,7 +117,8 @@ export class FriendsSidebar {
       return;
     }
 
-
+    foundFriend.setActive(true);
+    this.tweetTimeline.addToCurrent([foundFriend.user], 'Timeline of Friends');
   }
 
   unfollow(friend: IUser) {
