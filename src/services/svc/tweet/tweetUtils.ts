@@ -43,7 +43,34 @@ export class TweetUtils {
     }
 
     const tweetObject: ITweet = Object.assign({}, object);
+    if (object._id) {
+      tweetObject.id = object._id;
+    }
     return tweetObject;
 
+  }
+
+  public static dePopulateUser(tweet: ITweet) {
+    if (!tweet) {
+      return null;
+    }
+
+    const posterId: any = tweet.poster.id;
+    tweet.poster = posterId;
+    return tweet;
+  }
+
+  public static mapFromTweet(tweet: ITweet) {
+    if (!tweet) {
+      return null;
+    }
+
+    let newObject: any = this.dePopulateUser(tweet);
+    delete newObject._v0;
+    delete newObject.id;
+    delete newObject._id;
+    delete newObject.createdAt;
+    delete newObject.updatedAt;
+    return newObject;
   }
 }

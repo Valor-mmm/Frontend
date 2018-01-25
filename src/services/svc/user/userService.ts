@@ -1,6 +1,6 @@
 import {inject, LogManager} from 'aurelia-framework';
 import {EventAggregator} from 'aurelia-event-aggregator'
-import {FetchClient, QueryObject} from "../../FetchClient";
+import {FetchClient} from "../../FetchClient";
 import FetchConfig from "../../fetchConfigLocal";
 import {AuthRole, LoginMessage} from "../../authMessages";
 import {IUser, UserUtils} from "./userUtils";
@@ -115,6 +115,20 @@ export class UserService {
     } catch (err) {
       logger.error('Could not fetch users by id', err);
       return null;
+    }
+  }
+
+  async updateUser(user: IUser) {
+    if (!user) {
+      return;
+    }
+    const id = JSON.parse(JSON.stringify(user.id));
+    const toUpdate = UserUtils.mapFromUser(user);
+    try {
+      const updateResult = await this.fetchClient.put(`${this.fetchConfig.usersPart}/${id}`, toUpdate);
+      return this.populateTweets(updateResult);
+    } catch (err) {
+      logger.error('Error during update of user', err);
     }
   }
 

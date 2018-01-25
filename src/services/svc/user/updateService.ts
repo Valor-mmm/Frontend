@@ -12,7 +12,7 @@ export class UpdateService {
 
   userData: UserData;
 
-  constructor(private userService: UserService,private TweetService: TweetService,  userData: UserData, private ea: EventAggregator) {
+  constructor(private userService: UserService, private TweetService: TweetService, userData: UserData, private ea: EventAggregator) {
     this.userData = userData;
   }
 
@@ -24,7 +24,9 @@ export class UpdateService {
       }).catch(err => {
         logger.error('Error on all users update.', err);
       });
-      this.userData.userFriends = await this.userService.getUsersById(this.userData.loggedInUser.following);
+      if (this.userData.loggedInUser.following.length > 0) {
+        this.userData.userFriends = await this.userService.getUsersById(this.userData.loggedInUser.following);
+      }
       this.ea.publish(new UpdateSuccess());
       logger.info('Finished fetching user data.');
     } catch (err) {

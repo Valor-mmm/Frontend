@@ -7,17 +7,18 @@ import {TweetTimeline} from "../tweetTimeline/tweetTimeline";
 import {TimeLineDesc} from "../tweetTimeline/timelineDesc";
 import {Friend} from "./friend";
 import {SwitchToFriend} from "../../../services/timelineMessage";
+import {UserService} from "../../../services/svc/user/userService";
 
 const logger = LogManager.getLogger('FriendsSidebar');
 
-@inject(EventAggregator, UserData, TweetTimeline)
+@inject(EventAggregator, UserData, TweetTimeline, UserService)
 export class FriendsSidebar {
 
   userData: UserData;
   friends: Friend[] = [];
 
 
-  constructor(ea: EventAggregator, userData: UserData, private tweetTimeline: TweetTimeline) {
+  constructor(ea: EventAggregator, userData: UserData, private tweetTimeline: TweetTimeline, private userService: UserService) {
     this.userData = userData;
 
     ea.subscribe(UpdateSuccess, () => {
@@ -118,8 +119,29 @@ export class FriendsSidebar {
 
   }
 
-  unfollow(firend: IUser) {
-    // TODO
+  unfollow(friend: IUser) {
+    if (!friend) {
+      return;
+    }
+
+    const friendIndex = this.userData.loggedInUser.following.indexOf(friend.id);
+    this.userData.loggedInUser.following.splice(friendIndex, 1);
+
+    const friendArrIndex = this.friends.findIndex((value: Friend) => {
+      return value.user.id === friend.id;
+    });
+    this.friends.splice(friendArrIndex,1 );
+
+    const userDataIndex = this.userData.userFriends.findIndex((value: IUser) => {
+      return value.id === friend.id;
+    });
+    this.userData.userFriends.splice(userDataIndex, 1);
+
+    this.userService.updateUser(this.userData.loggedInUser).then(updateResult => {
+      this.userData.loggedInUser = updateResult;
+    }).catch(err => {
+      logger.error('Error while unfollowing friend.', err)
+    });
   }
 
   displayFirehose() {

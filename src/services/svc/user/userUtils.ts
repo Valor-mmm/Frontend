@@ -1,5 +1,4 @@
 import {ITweet} from "../tweet/tweetUtils";
-
 export interface IUser {
   id: string,
   updatedAt: string,
@@ -64,5 +63,33 @@ export class UserUtils {
     }
     return userObject;
 
+  }
+
+  public static dePopulateTweets(user: IUser) {
+    if (!user) {
+      return;
+    }
+
+    const tweets = [];
+    for (const tweet of user.tweets) {
+      tweets.push(tweet.id);
+    }
+
+    user.tweets = tweets;
+    return user;
+  }
+
+  public static mapFromUser(user: IUser) {
+    if (!user) {
+      return null;
+    }
+
+    let newObject: any = this.dePopulateTweets(user);
+    delete newObject.__v;
+    delete newObject.id;
+    delete newObject._id;
+    delete newObject.createdAt;
+    delete newObject.updatedAt;
+    return newObject;
   }
 }

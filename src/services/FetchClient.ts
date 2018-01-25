@@ -73,6 +73,7 @@ export class FetchClient {
 
 
   async getText(targetUrl, query: any) {
+    FetchClient.logRequestStart(targetUrl);
     const fetchResult: Response = await this.sendGet(targetUrl, query);
 
     let result;
@@ -88,7 +89,7 @@ export class FetchClient {
 
 
   async get(targetUrl, query: any) {
-
+    FetchClient.logRequestStart(targetUrl);
     const fetchResult: Response = await this.sendGet(targetUrl, query);
 
     let result;
@@ -112,8 +113,30 @@ export class FetchClient {
     return fetchResult;
   }
 
+  async put(targetUrl: string, object: any) {
+    FetchClient.logRequestStart(targetUrl);
 
-  async handleNotOkResponse(response: Response) {
+    const fetchResult: Response = await this.fetchClient.fetch(targetUrl, {
+      method: 'put',
+      body: json(object)
+    });
+
+    if (!fetchResult.ok) {
+      this.handleNotOkResponse(fetchResult);
+    }
+
+    try {
+      const result = fetchResult.json();
+      FetchClient.logSuccess(targetUrl, fetchResult.status);
+      return result;
+    } catch (error) {
+      logger.error('Unable to read fetch result', error);
+      throw error;
+    }
+  }
+
+
+  handleNotOkResponse(response: Response) {
 
   }
 
