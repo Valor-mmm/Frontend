@@ -119,7 +119,7 @@ export class UserService {
     }
   }
 
-  async updateUser(user: IUser) {
+  async updateUser(user: IUser, preventDataUpdate: boolean) {
     if (!user) {
       return;
     }
@@ -127,10 +127,13 @@ export class UserService {
     const toUpdate = UserUtils.mapFromUser(user);
     try {
       const updateResult = await this.fetchClient.put(`${this.fetchConfig.usersPart}/${id}`, toUpdate);
-      this.eventAggregator.publish(new UpdateRequest(id));
+      if (!preventDataUpdate) {
+        this.eventAggregator.publish(new UpdateRequest(id));
+      }
       return true;
     } catch (err) {
       logger.error('Error during update of user', err);
+      return false;
     }
   }
 

@@ -5,6 +5,7 @@ import {TweetData} from "./tweetData";
 import {ITweet, TweetUtils} from "./tweetUtils";
 import {ImageService} from "../imageService";
 import {UserData} from "../user/userData";
+import {IUser} from "../user/userUtils";
 
 const logger = LogManager.getLogger('TweetService');
 
@@ -59,13 +60,32 @@ export class TweetService {
 
     try {
       const result = await this.fetchClient.postJSON(this.fetchConfig.tweetsPart, tweetData);
-      const newTweet =  TweetUtils.mapToTweet(result);
+      const newTweet = TweetUtils.mapToTweet(result);
       newTweet.poster = this.userData.loggedInUser;
       return newTweet;
     } catch (err) {
       logger.error('Error during creation of tweet.', err);
       return null;
     }
+  }
+
+  async deleteTweets(tweets: ITweet[]) {
+    if (!Array.isArray(tweets)) {
+      return;
+    }
+
+    const idArr: string[] = [];
+    for (const tweet of tweets) {
+      idArr.push(tweet.id);
+    }
+
+    try {
+      return await this.fetchClient.delete(this.fetchConfig.tweetsPart, {ids: idArr});
+    } catch (err) {
+      logger.error('Error during deleting tweets.', err);
+      return false;
+    }
+
   }
 
 }

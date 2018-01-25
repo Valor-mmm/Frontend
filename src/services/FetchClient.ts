@@ -135,6 +135,27 @@ export class FetchClient {
     }
   }
 
+  async delete(targetUrl: string, query: any) {
+    FetchClient.logRequestStart(targetUrl);
+
+    const fetchResult: Response = await this.fetchClient.fetch(targetUrl + (query ? `?${buildQueryString(query)}` : ''), {
+      method: 'delete'
+    });
+
+    if (!fetchResult.ok) {
+      this.handleNotOkResponse(fetchResult);
+    }
+
+    try {
+      const result = fetchResult.json();
+      FetchClient.logSuccess(targetUrl, fetchResult.status);
+      return result;
+    } catch (error) {
+      logger.error('Unable to read fetch result', error);
+      throw error;
+    }
+  }
+
 
   handleNotOkResponse(response: Response) {
 

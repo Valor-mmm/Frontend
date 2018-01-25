@@ -11,10 +11,12 @@ import {EventAggregator} from 'aurelia-event-aggregator';
 import {SwitchToFriend} from "../../../services/timelineMessage";
 import {UserService} from "../../../services/svc/user/userService";
 import {TweetWrapper} from "./TweetWrapper";
+import {TweetDeleter} from "../../../services/svc/tweet/tweetDeleter";
+import {UpdateRequest} from "../../../services/updateMessages";
 
 const logger = LogManager.getLogger('TweetTimeline');
 
-@inject(UserData, BindingEngine, ValidationController, TweetService, ImageService, EventAggregator, UserService)
+@inject(UserData, BindingEngine, ValidationController, TweetService, ImageService, EventAggregator, UserService, TweetDeleter)
 export class TweetTimeline {
 
   tweets: TweetWrapper[];
@@ -30,7 +32,8 @@ export class TweetTimeline {
 
 
   constructor(userData: UserData, be: BindingEngine, vc: ValidationController, private tweetService: TweetService,
-              private imageService: ImageService, private eventAggregator: EventAggregator, private userService: UserService) {
+              private imageService: ImageService, private eventAggregator: EventAggregator,
+              private userService: UserService, private tweetDeleter: TweetDeleter) {
     this.tweets = [];
     this.userData = userData;
 
@@ -117,7 +120,15 @@ export class TweetTimeline {
   }
 
   public deleteSelected() {
-
+    const selected: TweetWrapper[] = this.getSelected();
+    const tweets: ITweet[] = selected.map((tw:TweetWrapper) => {
+      return tw.tweet;
+    });
+    this.tweetDeleter.deleteTweets(tweets).then(() => {
+      this.eventAggregator.publish(new UpdateRequest(this.userData.loggedInUser.id));
+    }).catch(err => {
+      logger.error('Error while deleting tweets.', err);
+    });
   }
 
   public selectCard(tweetWrapper: TweetWrapper) {
@@ -181,7 +192,7 @@ export class TweetTimeline {
     }
 
     this.userData.loggedInUser.following.push(user.id);
-    this.userService.updateUser(this.userData.loggedInUser).then(() => {
+    this.userService.updateUser(this.userData.loggedInUser, null).then(() => {
       logger.info('Successfully following friend', user.username);
     }).catch(err => {
       logger.error('Could not follow friend.', err);
@@ -225,7 +236,7 @@ export class TweetTimeline {
 
   private addTweetToLoggedInUser(tweet: ITweet) {
     this.userData.loggedInUser.tweets.push(tweet);
-    this.userService.updateUser(this.userData.loggedInUser).then(() => {
+    this.userService.updateUser(this.userData.loggedInUser, null).then(() => {
       logger.info('Finished updating user.');
     }).catch(err => {
       logger.error('Error during update of user.', err);
