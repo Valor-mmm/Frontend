@@ -10,13 +10,14 @@ import {ImageService} from "../../../services/svc/imageService";
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {SwitchToFriend} from "../../../services/timelineMessage";
 import {UserService} from "../../../services/svc/user/userService";
+import {TweetWrapper} from "./TweetWrapper";
 
 const logger = LogManager.getLogger('TweetTimeline');
 
 @inject(UserData, BindingEngine, ValidationController, TweetService, ImageService, EventAggregator, UserService)
 export class TweetTimeline {
 
-  tweets: ITweet[];
+  tweets: TweetWrapper[];
   userData: UserData;
   timelineDescription: TimeLineDesc;
 
@@ -61,6 +62,26 @@ export class TweetTimeline {
     this.addToCurrent(users);
   }
 
+  private isTweetOfLoggedInUser(tweet: ITweet) {
+    if (!tweet) {
+      return false;
+    }
+    return this.userData.loggedInUser.id === tweet.poster.id;
+  }
+
+  private isTweetOfUserFriend(tweet: ITweet) {
+    if (!tweet) {
+      return false;
+    }
+
+    for (const userId of this.userData.loggedInUser.following) {
+      if (userId === tweet.poster.id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public addToCurrent(users: IUser[]) {
     if (!Array.isArray(users)) {
       return;
@@ -68,7 +89,9 @@ export class TweetTimeline {
 
     for (const user of users) {
       if (user.tweets) {
-        this.tweets = this.tweets.concat(user.tweets);
+        for (const tweet of user.tweets) {
+          this.tweets.push(new TweetWrapper(tweet, this.isTweetOfLoggedInUser(tweet), this.isTweetOfUserFriend(tweet)))
+        }
       }
     }
     this.tweets.sort(TweetTimeline.tweetUpdatedAtComparator);
@@ -78,10 +101,10 @@ export class TweetTimeline {
     if (!user || !(Array.isArray(user.tweets))) {
       return;
     }
-    this.tweets = this.tweets.filter((tweet: ITweet) => {
+    this.tweets = this.tweets.filter((tweetWrapper: TweetWrapper) => {
       let notOfUser: boolean = true;
       for (const userTweet of user.tweets) {
-        if (userTweet.id === tweet.id) {
+        if (userTweet.id === tweetWrapper.tweet.id) {
           notOfUser = false;
         }
       }
@@ -100,9 +123,9 @@ export class TweetTimeline {
     this.updateTimeline([this.userData.loggedInUser]);
   }
 
-  public static tweetUpdatedAtComparator(tweet1: ITweet, tweet2: ITweet) {
-    const date1: number = Date.parse(tweet1.createdAt);
-    const date2: number = Date.parse(tweet2.createdAt);
+  public static tweetUpdatedAtComparator(tweet1: TweetWrapper, tweet2: TweetWrapper) {
+    const date1: number = Date.parse(tweet1.tweet.createdAt);
+    const date2: number = Date.parse(tweet2.tweet.createdAt);
     if (isNaN(date1) || isNaN(date2)) {
       logger.warn('Tweet dates could not be parsed to a number', date1, date2);
       return 0;

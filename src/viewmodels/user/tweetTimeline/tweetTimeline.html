@@ -20,14 +20,14 @@
         </section>
       </section>
       <div class="ui big blue ribbon label">${timelineDescription.title}</div>
-      <article repeat.for="tweet of tweets" class="ui centered card">
-        <section if.bind="tweet.image" class="image">
-          <img class="image" src="${tweet | currencyFormat & async}">
+      <article repeat.for="tweetWrapper of tweets" class="ui centered card">
+        <section if.bind="tweetWrapper.tweet.image" class="image">
+          <img class="image" src="${tweetWrapper.tweet | currencyFormat & async}">
         </section>
         <section class="content">
-          <a class="header" click.delegate="switchToFriend(tweet.poster)">${tweet.poster.username}</a>
+          <a class="header" click.delegate="switchToFriend(tweetWrapper.tweet.poster)">${tweetWrapper.tweet.poster.username}</a>
           <div class="description">
-            ${tweet.content}
+            ${tweetWrapper.tweet.content}
           </div>
         </section>
       </article>
