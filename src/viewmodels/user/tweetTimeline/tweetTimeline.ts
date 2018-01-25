@@ -133,6 +133,25 @@ export class TweetTimeline {
     return date1 - date2;
   }
 
+  public followUser(user: IUser) {
+    if (!user) {
+      return;
+    }
+
+    const isUserFollowing = this.userData.loggedInUser.following.indexOf(user.id);
+    if (isUserFollowing !== -1) {
+      logger.warn('User already follows the given user', user.id);
+      return;
+    }
+
+    this.userData.loggedInUser.following.push(user.id);
+    this.userService.updateUser(this.userData.loggedInUser).then( () => {
+      logger.info('Successfully following friend', user.username);
+    }).catch(err => {
+      logger.error('Could not follow friend.', err);
+    });
+  }
+
   public switchToFriend(friend: IUser) {
     if (friend.id === this.userData.loggedInUser.id) {
       this.updateTimeline([this.userData.loggedInUser]);

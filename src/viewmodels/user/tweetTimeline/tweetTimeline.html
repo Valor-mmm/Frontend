@@ -1,6 +1,6 @@
 <template>
 
-  <require from ='./currency-format'></require>
+  <require from='./currency-format'></require>
   <require from='./asyncBindingBehavior'></require>
 
   <article class="ui raised three column segment stackable container relaxed grid">
@@ -21,11 +21,13 @@
       </section>
       <div class="ui big blue ribbon label">${timelineDescription.title}</div>
       <article repeat.for="tweetWrapper of tweets" class="ui centered card">
+        <a if.bind="!tweetWrapper.isLoggedInUser && !tweetWrapper.isFriend" click.delegate="followUser(tweetWrapper.tweet.poster)" class="ui floating teal circular label"><i
+          class="ui add user icon"></i></a>
         <section if.bind="tweetWrapper.tweet.image" class="image">
           <img class="image" src="${tweetWrapper.tweet | currencyFormat & async}">
         </section>
         <section class="content">
-          <a class="header" click.delegate="switchToFriend(tweetWrapper.tweet.poster)">${tweetWrapper.tweet.poster.username}</a>
+            <a class="header" click.delegate="switchToFriend(tweetWrapper.tweet.poster)">${tweetWrapper.tweet.poster.username}</a>
           <div class="description">
             ${tweetWrapper.tweet.content}
           </div>
@@ -46,11 +48,12 @@
     <form class="ui form">
       <section class="content">
         <div class="ui field">
-          <input class="ui primary button" type="file" accept="image/*" files.bind="image" name="Add an Image" >
+          <input class="ui primary button" type="file" accept="image/*" files.bind="image" name="Add an Image">
         </div>
         <div class="ui field">
           <label class="ui teal label">What do you want to say?</label>
-          <textarea value.bind="content" rows="5" cols="35" class="ui left labeled input" placeholder="But not longer than 140 chars ;)"></textarea>
+          <textarea value.bind="content" rows="5" cols="35" class="ui left labeled input"
+                    placeholder="But not longer than 140 chars ;)"></textarea>
         </div>
       </section>
       <div class="actions">
