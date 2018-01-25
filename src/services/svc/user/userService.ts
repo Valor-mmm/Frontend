@@ -6,6 +6,7 @@ import {AuthRole, LoginMessage} from "../../authMessages";
 import {IUser, UserUtils} from "./userUtils";
 import {TweetService} from "../tweet/tweetService";
 import {ITweet} from "../tweet/tweetUtils";
+import {UpdateRequest} from "../../updateMessages";
 
 const logger = LogManager.getLogger('UserService');
 
@@ -126,7 +127,8 @@ export class UserService {
     const toUpdate = UserUtils.mapFromUser(user);
     try {
       const updateResult = await this.fetchClient.put(`${this.fetchConfig.usersPart}/${id}`, toUpdate);
-      return this.populateTweets(updateResult);
+      this.eventAggregator.publish(new UpdateRequest(id));
+      return true;
     } catch (err) {
       logger.error('Error during update of user', err);
     }

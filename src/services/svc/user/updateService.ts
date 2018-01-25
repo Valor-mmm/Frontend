@@ -3,7 +3,7 @@ import {UserService} from "./userService";
 import {TweetService} from "../tweet/tweetService";
 import {UserData} from "./userData";
 import {EventAggregator} from 'aurelia-event-aggregator';
-import {UpdateSuccess} from "../../updateMessages";
+import {UpdateRequest, UpdateSuccess} from "../../updateMessages";
 
 const logger = LogManager.getLogger('UpdateService');
 
@@ -14,6 +14,16 @@ export class UpdateService {
 
   constructor(private userService: UserService, private TweetService: TweetService, userData: UserData, private ea: EventAggregator) {
     this.userData = userData;
+
+    ea.subscribe(UpdateRequest, (request: UpdateRequest) => {
+      if (request && request.id) {
+        this.fetchUserData(request.id).then(() => {
+          logger.info('Update successfull');
+        }).catch(err => {
+          logger.error('Error during update', err);
+        });
+      }
+    })
   }
 
   async fetchUserData(id: string) {
@@ -24,6 +34,7 @@ export class UpdateService {
       }).catch(err => {
         logger.error('Error on all users update.', err);
       });
+      this.userData.userFriends = [];
       if (this.userData.loggedInUser.following.length > 0) {
         this.userData.userFriends = await this.userService.getUsersById(this.userData.loggedInUser.following);
       }
