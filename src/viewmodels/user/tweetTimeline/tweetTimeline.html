@@ -1,4 +1,8 @@
 <template>
+
+  <require from ='./currency-format'></require>
+  <require from='./asyncBindingBehavior'></require>
+
   <article class="ui raised three column segment stackable container relaxed grid">
     <article id="followersContent" class="ui three wide left floated column">
       <button class="ui primary button" click.delegate="toOwnTimeline()">To Your Timeline</button>
@@ -18,7 +22,7 @@
       <div class="ui big blue ribbon label">${timelineDescription.title}</div>
       <article repeat.for="tweet of tweets" class="ui centered card">
         <section if.bind="tweet.image" class="image">
-          <img class="image" name.bind="getImgUrlForTweet(tweet)">
+          <img class="image" src="${tweet | currencyFormat & async}">
         </section>
         <section class="content">
           <a class="header" href="#">${tweet.poster.username}</a>
