@@ -9,10 +9,11 @@ import {TweetService} from "../../../services/svc/tweet/tweetService";
 import {ImageService} from "../../../services/svc/imageService";
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {SwitchToFriend} from "../../../services/timelineMessage";
+import {UserService} from "../../../services/svc/user/userService";
 
 const logger = LogManager.getLogger('TweetTimeline');
 
-@inject(UserData, BindingEngine, ValidationController, TweetService, ImageService, EventAggregator)
+@inject(UserData, BindingEngine, ValidationController, TweetService, ImageService, EventAggregator, UserService)
 export class TweetTimeline {
 
   tweets: ITweet[];
@@ -26,7 +27,7 @@ export class TweetTimeline {
 
 
   constructor(userData: UserData, be: BindingEngine, vc: ValidationController, private tweetService: TweetService,
-              private imageService: ImageService, private eventAggregator: EventAggregator) {
+              private imageService: ImageService, private eventAggregator: EventAggregator, private userService: UserService) {
     this.tweets = [];
     this.userData = userData;
 
@@ -137,15 +138,11 @@ export class TweetTimeline {
 
   private addTweetToLoggedInUser(tweet: ITweet) {
     this.userData.loggedInUser.tweets.push(tweet);
-    for (const user of this.userData.allUsers) {
-      if (user.id === this.userData.loggedInUser.id) {
-        user.tweets.push(tweet);
-      }
-    }
-
-    if (this.timelineDescription.isLoggedInUser) {
-      this.toOwnTimeline();
-    }
+    this.userService.updateUser(this.userData.loggedInUser).then(() => {
+      logger.info('Finished updating user.');
+    }).catch(err => {
+      logger.error('Error during update of user.', err);
+    });
   }
 
   private async validate() {
