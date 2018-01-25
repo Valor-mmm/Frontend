@@ -115,6 +115,13 @@ export class TweetTimeline {
       this.updateTimeline([this.userData.loggedInUser]);
       friend = null;
     }
+
+    const friendIndex = this.userData.loggedInUser.following.indexOf(friend.id);
+    if (friendIndex === -1) {
+      const description: TimeLineDesc = new TimeLineDesc(false, `Timeline of: ${friend.username}`);
+      this.changeTimeline([friend], description);
+    }
+
     this.eventAggregator.publish(new SwitchToFriend(friend));
   }
 
