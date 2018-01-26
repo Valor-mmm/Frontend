@@ -117,7 +117,11 @@ export class TweetTimeline {
   }
 
   public deleteAll() {
-
+    this.tweetDeleter.deleteTweets(this.userData.loggedInUser.tweets).then(() => {
+      this.eventAggregator.publish(new UpdateRequest(this.userData.loggedInUser.id));
+    }).catch(err => {
+      logger.error('Error while deleting tweets.', err);
+    });
   }
 
   public deleteSelected() {
