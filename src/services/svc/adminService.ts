@@ -38,6 +38,7 @@ export class AdminService {
           loginEvent.message = authResult.message;
         }
         this.eventAggregator.publish(loginEvent);
+        throw loginEvent;
       }
     }).catch(err => {
       if (err) {
@@ -49,6 +50,9 @@ export class AdminService {
       }
 
       this.eventAggregator.publish(loginEvent);
+      if (err) {
+        throw err;
+      }
     })
   }
 

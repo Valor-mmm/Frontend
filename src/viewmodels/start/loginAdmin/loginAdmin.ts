@@ -1,18 +1,54 @@
-import {inject} from 'aurelia-framework'
+import {inject, LogManager} from 'aurelia-framework'
 import {EventAggregator} from 'aurelia-event-aggregator';
-import {AuthRole, LoginMessage} from "../../../services/authMessages";
+import {AdminService} from "../../../services/svc/adminService";
+import {ValidationController, ValidationRules} from "aurelia-validation";
 
-@inject(EventAggregator)
+const logger = LogManager.getLogger('LoginAdmin');
+
+@inject(EventAggregator, AdminService, ValidationController)
 export class LoginAdmin {
+
+  username: string;
+  password: string;
+
+  errorMessage: string;
+
 
   eventAggregator: EventAggregator;
 
-  constructor(ea: EventAggregator) {
+  constructor(ea: EventAggregator, private adminService: AdminService, private controller: ValidationController) {
     this.eventAggregator = ea;
+
+    ValidationRules
+      .ensure((w: LoginAdmin) => w.username).required()
+      .ensure((w: LoginAdmin) => w.password).required()
+      .on(this);
   }
 
-  login() {
-    this.eventAggregator.publish(new LoginMessage(AuthRole.ADMIN, true));
+  async validate() {
+    try {
+      const result = await this.controller.validate({object: this});
+      return result.valid;
+    } catch (err){
+      logger.warn('Validation failed with error.', err);
+      return false;
+    }
+  }
+
+  async login() {
+    const valid = await this.validate();
+    if (!valid) {
+      return;
+    }
+
+    try {
+      await this.adminService.authenticate(this.username, this.password);
+    } catch (err) {
+      if (err.message) {
+        this.errorMessage = err.message;
+      }
+      this.errorMessage = err;
+    }
   }
 
 }

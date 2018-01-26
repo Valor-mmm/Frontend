@@ -1,5 +1,29 @@
 <template>
-  Login admin
-
-  <button click.trigger="login()">Login</button>
+  <article class="ui container" style="width: 60%; margin-top: 10%;">
+    <div class="ui icon attached warning message">
+      <i class="ui unlock alternate icon"></i>
+      This is the admin part of the application.
+      Please be responsible with your admin account credentials...<br/>
+      Bah nobody reads such warnings anyway. You are an admin. You know what to do.
+    </div>
+    <form class="ui form attached fluid segment" submit.delegate="login($event)" style="margin-top: 20px;">
+      <section class="ui field">
+        <label>Username</label>
+        <input type="text" class="ui input" value.bind="username" placeholder="Username">
+      </section>
+      <section class="ui field">
+        <label>Password</label>
+        <input type="password" class="ui input" value.bind="password" placeholder="Password">
+      </section>
+      <button type="submit" class="ui blue submit button">Submit</button>
+      <section class="ui divided list" if.bind="controller.errors">
+        <div class="item error" repeat.for="error of controller.errors">
+          ${error.message}
+        </div>
+      </section>
+      <section if.bind="errorMessage" class="ui padded section">
+        <p class="error">${errorMessage}</p>
+      </section>
+    </form>
+  </article>
 </template>
