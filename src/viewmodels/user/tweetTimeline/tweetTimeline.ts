@@ -46,6 +46,7 @@ export class TweetTimeline {
       logger.info('Logged in user changed.');
       if (this.userData && this.userData.loggedInUser) {
         this.updateTimeline([this.userData.loggedInUser]);
+        this.updateSelectionFlag();
       }
     })
   }
@@ -136,6 +137,10 @@ export class TweetTimeline {
       return;
     }
     tweetWrapper.invertSelection();
+    this.updateSelectionFlag();
+  }
+
+  private updateSelectionFlag() {
     const selected = this.getSelected();
     if (selected.length <= 0) {
       this.oneSelected = false;
@@ -231,6 +236,8 @@ export class TweetTimeline {
       this.creationError = 'An unexpected error happened while we created your tweet. Please do some voodoo and try it again.';
       return;
     }
+    this.content = '';
+    this.image = null;
     this.addTweetToLoggedInUser(newTweet);
   }
 

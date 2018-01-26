@@ -84,7 +84,8 @@ export class UserUtils {
       return null;
     }
 
-    let newObject: any = this.dePopulateTweets(user);
+    const changedObject: any = this.dePopulateTweets(user);
+    const newObject = JSON.parse(JSON.stringify(changedObject));
     delete newObject.__v;
     delete newObject.id;
     delete newObject._id;
