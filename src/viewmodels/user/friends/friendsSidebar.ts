@@ -129,7 +129,7 @@ export class FriendsSidebar {
     const friendIndex = this.userData.loggedInUser.following.indexOf(friend.id);
     this.userData.loggedInUser.following.splice(friendIndex, 1);
 
-    this.userService.updateUser(this.userData.loggedInUser).then(updateResult => {
+    this.userService.updateUser(this.userData.loggedInUser, false).then(updateResult => {
       logger.info('Received update result.')
     }).catch(err => {
       logger.error('Error while unfollowing friend.', err)

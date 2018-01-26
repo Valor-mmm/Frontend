@@ -69,14 +69,14 @@ export class TweetTimeline {
   }
 
   private isTweetOfLoggedInUser(tweet: ITweet) {
-    if (!tweet) {
+    if (!tweet || !tweet.poster || !tweet.poster.id || !this.userData.loggedInUser.id) {
       return false;
     }
     return this.userData.loggedInUser.id === tweet.poster.id;
   }
 
   private isTweetOfUserFriend(tweet: ITweet) {
-    if (!tweet) {
+    if (!tweet || !tweet.poster || !tweet.poster.id || !this.userData.loggedInUser.following) {
       return false;
     }
 
