@@ -19,10 +19,17 @@ export class User {
         nav: true,
         title: 'Timeline'
       },
+      {
+        route: 'settings',
+        name: 'settings',
+        moduleId: 'viewmodels/user/userSettings/userSettings',
+        nav: true,
+        title: 'Settings'
+      },
       {route: 'logout', name: 'logout', moduleId: 'viewmodels/logout/logout', nav: true, title: 'Logout'}
     ]);
     this.router = router;
 
-    config.mapUnknownRoutes({ redirect: '#/' });
+    config.mapUnknownRoutes({redirect: '#/'});
   }
 }
