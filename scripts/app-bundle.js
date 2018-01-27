@@ -533,7 +533,7 @@ define('services/fetchConfigLocal',["require", "exports"], function (require, ex
     Object.defineProperty(exports, "__esModule", { value: true });
     var FetchConfig = (function () {
         function FetchConfig() {
-            this.baseUrl = "http://localhost:4000/api/";
+            this.baseUrl = "https://node-js-twitter-backend.herokuapp.com/api/";
             this.usersPart = "users";
             this.adminsPart = "admins";
             this.tweetsPart = "tweets";
