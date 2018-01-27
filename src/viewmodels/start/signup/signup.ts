@@ -41,7 +41,11 @@ export class Signup {
     this.validate().then(isValid => {
       if(isValid === true) {
         this.signingUp = true;
-        this.userService.signUp(this.username, this.email, this.password, this.firstName, this.lastName).catch( err => {
+        this.userService.signUp(this.username, this.email, this.password, this.firstName, this.lastName, true)
+          .then( () => {
+            logger.info('Signup successful');
+          })
+          .catch( err => {
           logger.error('Error during signup process', err);
           if (err && err.message) {
             this.errorMessage = err.message;

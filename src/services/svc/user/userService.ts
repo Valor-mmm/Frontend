@@ -68,7 +68,7 @@ export class UserService {
     this.eventAggregator.publish(loginEvent);
   }
 
-  async signUp(username: string, email: string, password: string, firstName: string, lastName: string) {
+  async signUp(username: string, email: string, password: string, firstName: string, lastName: string, loginAfter: boolean) {
     const signupBody = {
       username: username,
       email: email,
@@ -80,7 +80,9 @@ export class UserService {
     try {
       await this.fetchClient.postJSON(this.fetchConfig.usersPart, signupBody);
 
-      await this.authenticate(email, password);
+      if (loginAfter) {
+        await this.authenticate(email, password);
+      }
       return true;
     } catch (exception) {
       logger.error('Exception during signup.', exception);
