@@ -2,7 +2,6 @@ import {inject} from "aurelia-framework";
 import {UserService} from "../../../services/svc/user/userService";
 import {BindingEngine} from 'aurelia-binding';
 import {AdminData} from "../../../services/svc/admin/adminData";
-import {UserWrapper} from "./UserWrapper";
 import {UserDeleter} from "../../../services/svc/user/userDeleter";
 import {IUser} from "../../../services/svc/user/userUtils";
 import {UpdateService} from "../../../services/svc/user/updateService";
@@ -33,11 +32,6 @@ export class ManageUsers {
     this.users = this.adminData.allUsers;
     this.selectedUsers = [];
 
-  }
-
-  public select(userWrapper: UserWrapper) {
-    userWrapper.isSelected = !userWrapper.isSelected;
-    debugger;
   }
 
   public async deleteUsers() {
