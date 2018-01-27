@@ -23,6 +23,10 @@ export class Statistics {
   }
 
   private update() {
+    if (! this.adminData || !Array.isArray(this.adminData.allUsers)) {
+      return;
+    }
+    
     this.userNumber = this.adminData.allUsers.length;
 
     let tweets = 0;

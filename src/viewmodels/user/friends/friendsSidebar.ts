@@ -60,7 +60,7 @@ export class FriendsSidebar {
     if (!Array.isArray(this.userData.userFriends)) {
       return;
     }
-    
+
     this.friends = [];
     for (const user of this.userData.userFriends) {
       this.friends.push(new Friend(user));
