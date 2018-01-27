@@ -117,7 +117,7 @@ export class TweetTimeline {
   }
 
   public deleteAll() {
-    this.tweetDeleter.deleteTweets(this.userData.loggedInUser.tweets).then(() => {
+    this.tweetDeleter.deleteTweets(this.userData.loggedInUser.tweets, true).then(() => {
       this.eventAggregator.publish(new UpdateRequest(this.userData.loggedInUser.id));
     }).catch(err => {
       logger.error('Error while deleting tweets.', err);
@@ -129,7 +129,7 @@ export class TweetTimeline {
     const tweets: ITweet[] = selected.map((tw:TweetWrapper) => {
       return tw.tweet;
     });
-    this.tweetDeleter.deleteTweets(tweets).then(() => {
+    this.tweetDeleter.deleteTweets(tweets, true).then(() => {
       this.eventAggregator.publish(new UpdateRequest(this.userData.loggedInUser.id));
     }).catch(err => {
       logger.error('Error while deleting tweets.', err);

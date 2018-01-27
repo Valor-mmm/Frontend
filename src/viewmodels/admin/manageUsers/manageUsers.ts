@@ -3,16 +3,25 @@ import {UserService} from "../../../services/svc/user/userService";
 import {BindingEngine} from 'aurelia-binding';
 import {AdminData} from "../../../services/svc/admin/adminData";
 import {UserWrapper} from "./UserWrapper";
+import {UserDeleter} from "../../../services/svc/user/userDeleter";
+import {IUser} from "../../../services/svc/user/userUtils";
+import {UpdateService} from "../../../services/svc/user/updateService";
 
-@inject(AdminData, UserService, BindingEngine)
+@inject(AdminData, UserService, BindingEngine, UserDeleter, UpdateService)
 export class ManageUsers {
 
-  users: UserWrapper[];
+  users: IUser[];
+  selectedUsers: IUser[];
 
 
-  constructor(private adminData: AdminData, private userService: UserService, be: BindingEngine) {
+  constructor(private adminData: AdminData, private userService: UserService, be: BindingEngine,
+              private userDeleter: UserDeleter, private updateService: UpdateService) {
 
     be.propertyObserver(this.adminData, 'allUsers').subscribe(this.update.bind(this));
+    this.update();
+  }
+
+  attached() {
     this.update();
   }
 
@@ -21,30 +30,31 @@ export class ManageUsers {
     if (!this.adminData || !Array.isArray(this.adminData.allUsers)) {
       return;
     }
-    this.users = [];
-    for (const user of this.adminData.allUsers) {
-      this.users.push(new UserWrapper(user))
-    }
+    this.users = this.adminData.allUsers;
+    this.selectedUsers = [];
 
   }
 
-  public getSelected() {
-    let selected = this.users.filter( (user: UserWrapper) => {
-      return user.isSelected;
-    });
-
-    if (!selected) {
-      selected= [];
-    }
-    return selected
+  public select(userWrapper: UserWrapper) {
+    userWrapper.isSelected = !userWrapper.isSelected;
+    debugger;
   }
 
-  public deleteUsers() {
+  public async deleteUsers() {
+    if (this.selectedUsers.length <= 0) {
+      return;
+    }
 
+    try {
+      await this.userDeleter.deleteUser(this.selectedUsers);
+      await this.updateService.updateAdminData();
+    } catch (error) {
+      throw error;
+    }
   }
 
   public createUser() {
-    
+
   }
 
 }

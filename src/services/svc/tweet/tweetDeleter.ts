@@ -11,13 +11,15 @@ export class TweetDeleter {
 
   }
 
-  public async deleteTweets(tweets: ITweet[]) {
+  public async deleteTweets(tweets: ITweet[], updateUsers: boolean) {
     if (!Array.isArray(tweets)) {
       return;
     }
 
-    const usersToUpdate: IUser[] = this.getUsersToUpdate(tweets);
-    await this.updateUsers(usersToUpdate);
+    if (updateUsers) {
+      const usersToUpdate: IUser[] = this.getUsersToUpdate(tweets);
+      await this.updateUsers(usersToUpdate);
+    }
     await this.tweetService.deleteTweets(tweets);
 
     return;

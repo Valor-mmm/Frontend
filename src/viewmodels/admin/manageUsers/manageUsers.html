@@ -3,19 +3,20 @@
 
     <article class="ui centered piled segment">
       <article class="ui divided list">
-        <section class="ui item" repeat.for="userWrapper of users">
+        <section class="ui item" repeat.for="user of users">
           <div class="ui checkbox">
-            <input type="checkbox">
-            <label>${userWrapper.user.username}</label>
+            <input type="checkbox" model.bind="user" checked.bind="selectedUsers">
+            <label>${user.username}</label>
           </div>
         </section>
       </article>
     </article>
-    <section class="ui small buttons">
-      <button class="ui negative button">Delete</button>
+    <div class="ui buttons">
+      <button class="ui negative button" click.delegate="deleteUsers()">Delete</button>
       <div class="or"></div>
-      <button class="ui positive button">Create</button>
-    </section>
+      <button class="ui positive button" onclick="">Create</button>
+    </div>
+
 
   </article>
 </template>

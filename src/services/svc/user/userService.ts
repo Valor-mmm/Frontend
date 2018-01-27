@@ -156,4 +156,26 @@ export class UserService {
     user.tweets = tweets;
     return user;
   }
+
+  async deleteUsers(users: IUser[]) {
+    if (! Array.isArray(users)) {
+      return;
+    }
+
+    const userIds:string[] = [];
+    for (const user of users) {
+      if (!user.id) {
+        continue;
+      }
+      userIds.push(user.id);
+    }
+
+    try {
+      await this.fetchClient.delete(this.fetchConfig.usersPart, {ids: userIds});
+      return true;
+    } catch (error) {
+      logger.error('Error during deletion of users.', error);
+      throw error;
+    }
+  }
 }

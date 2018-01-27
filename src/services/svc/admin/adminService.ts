@@ -5,10 +5,11 @@ import FetchConfig from '../../fetchConfigLocal'
 import {AuthRole, LoginMessage} from "../../authMessages";
 import {UserService} from "../user/userService";
 import {AdminData} from "./adminData";
+import {UpdateService} from "../user/updateService";
 
 const logger = LogManager.getLogger('AdminService');
 
-@inject(EventAggregator, FetchClient, FetchConfig, UserService, AdminData)
+@inject(EventAggregator, FetchClient, FetchConfig, UserService, AdminData, UpdateService)
 export class AdminService {
 
   fetchClient: FetchClient;
@@ -17,7 +18,7 @@ export class AdminService {
 
 
   constructor(ea: EventAggregator, fetchClient: FetchClient, fetchConfig: FetchConfig, private userService: UserService,
-              private adminData: AdminData) {
+              private adminData: AdminData, private updateService: UpdateService) {
     this.eventAggregator = ea;
     this.fetchClient = fetchClient;
     this.fetchConfig = fetchConfig;
@@ -34,8 +35,8 @@ export class AdminService {
     this.fetchClient.postJSON(authUrl, authBody).then(authResult => {
       if (authResult.success && authResult.token) {
         FetchClient.setAuthToken(authResult.token);
-        this.userService.getUsersById([]).then(users => {
-          this.adminData.allUsers = users;
+        this.updateService.updateAdminData().then( () => {
+          logger.info('Updated all users for admin data');
         });
         this.eventAggregator.publish(new LoginMessage(AuthRole.ADMIN, true));
       } else {

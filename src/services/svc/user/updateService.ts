@@ -4,15 +4,17 @@ import {TweetService} from "../tweet/tweetService";
 import {UserData} from "./userData";
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {UpdateRequest, UpdateSuccess} from "../../updateMessages";
+import {AdminData} from "../admin/adminData";
 
 const logger = LogManager.getLogger('UpdateService');
 
-@inject(UserService, TweetService, UserData, EventAggregator)
+@inject(UserService, TweetService, UserData, EventAggregator, AdminData)
 export class UpdateService {
 
   userData: UserData;
 
-  constructor(private userService: UserService, private TweetService: TweetService, userData: UserData, private ea: EventAggregator) {
+  constructor(private userService: UserService, private TweetService: TweetService, userData: UserData,
+              private ea: EventAggregator, private adminData: AdminData) {
     this.userData = userData;
 
     ea.subscribe(UpdateRequest, (request: UpdateRequest) => {
@@ -59,6 +61,20 @@ export class UpdateService {
       throw error;
     } finally {
       console.timeEnd('fetchAllUsers');
+      logger.info('Finished loading all users;');
+    }
+  }
+
+  async updateAdminData() {
+    logger.info('Started loading all users.');
+    console.time('updateAdmin');
+    try {
+      this.adminData.allUsers = await this.userService.getUsersById(null);
+    } catch (error) {
+      logger.error('Error during fetch of all users.', error);
+      throw error;
+    } finally {
+      console.timeEnd('updateAdmin');
       logger.info('Finished loading all users;');
     }
   }
