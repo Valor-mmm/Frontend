@@ -35,12 +35,12 @@ export class AdminService {
     this.fetchClient.postJSON(authUrl, authBody).then(authResult => {
       if (authResult.success && authResult.token) {
         FetchClient.setAuthToken(authResult.token);
-        this.updateService.updateAdminData().then( () => {
+        this.updateService.updateAdminData().then(() => {
           logger.info('Updated all users for admin data');
         });
-        this.eventAggregator.publish(new LoginMessage(AuthRole.ADMIN, true));
+        this.eventAggregator.publish(new LoginMessage(AuthRole.ADMIN, true, false));
       } else {
-        const loginEvent = new LoginMessage(AuthRole.ADMIN, false);
+        const loginEvent = new LoginMessage(AuthRole.ADMIN, false, true);
         if (authResult.message) {
           loginEvent.message = authResult.message;
         }
@@ -51,7 +51,7 @@ export class AdminService {
       if (err) {
         logger.error('Error during authentication', err);
       }
-      const loginEvent = new LoginMessage(AuthRole.ADMIN, false);
+      const loginEvent = new LoginMessage(AuthRole.ADMIN, false, true);
       if (err.message) {
         loginEvent.message = err.message;
       }

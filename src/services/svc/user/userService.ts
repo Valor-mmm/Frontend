@@ -36,7 +36,7 @@ export class UserService {
       if (authResult.success && authResult.token) {
         this.handleAuthSuccess(authResult);
       } else {
-        const loginEvent = new LoginMessage(AuthRole.USER, false);
+        const loginEvent = new LoginMessage(AuthRole.USER, false, true);
         if (authResult.message) {
           loginEvent.message = authResult.message;
         }
@@ -49,7 +49,7 @@ export class UserService {
 
   handleAuthSuccess(authResult) {
     FetchClient.setAuthToken(authResult.token);
-    const loginMessage = new LoginMessage(AuthRole.USER, true);
+    const loginMessage = new LoginMessage(AuthRole.USER, true, true);
     if (authResult) {
       loginMessage.id = authResult.id;
     }
@@ -60,7 +60,7 @@ export class UserService {
     if (err) {
       logger.error('Error during authentication', err);
     }
-    const loginEvent = new LoginMessage(AuthRole.USER, false);
+    const loginEvent = new LoginMessage(AuthRole.USER, false, true);
     if (err.message) {
       loginEvent.message = err.message;
     }

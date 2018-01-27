@@ -30,7 +30,9 @@ export class App {
       } else {
         au.setRoot('app').then(() => {
             this.router.navigateToRoute('twittr');
-            ea.publish(new FailedLogin(msg.role, msg.message));
+            if (msg.failed) {
+              ea.publish(new FailedLogin(msg.role, msg.message));
+            }
           }
         );
       }
@@ -58,6 +60,6 @@ export class App {
     ]);
     this.router = router;
 
-    config.mapUnknownRoutes({ redirect: '#/' });
+    config.mapUnknownRoutes({redirect: '#/'});
   }
 }

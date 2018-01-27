@@ -6,19 +6,22 @@ export enum AuthRole {
 export interface ILoginMessage {
   role: AuthRole,
   success: boolean
+  failed: boolean
   message?: string
   id?: string
 }
 
-export class LoginMessage implements ILoginMessage{
+export class LoginMessage implements ILoginMessage {
   role: AuthRole;
   success: boolean;
+  failed: boolean;
   message?: string;
   id?: string;
 
-  constructor(role: AuthRole, success: boolean) {
+  constructor(role: AuthRole, success: boolean, failed: boolean) {
     this.role = role;
     this.success = success;
+    this.failed = failed;
   }
 
 }
