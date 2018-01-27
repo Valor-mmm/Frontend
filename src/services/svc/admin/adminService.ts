@@ -1,12 +1,14 @@
 import {inject, LogManager} from 'aurelia-framework';
 import {EventAggregator} from 'aurelia-event-aggregator';
-import {FetchClient} from '../FetchClient';
-import FetchConfig from '../fetchConfigLocal'
-import {AuthRole, LoginMessage} from "../authMessages";
+import {FetchClient} from '../../FetchClient';
+import FetchConfig from '../../fetchConfigLocal'
+import {AuthRole, LoginMessage} from "../../authMessages";
+import {UserService} from "../user/userService";
+import {AdminData} from "./adminData";
 
 const logger = LogManager.getLogger('AdminService');
 
-@inject(EventAggregator, FetchClient, FetchConfig)
+@inject(EventAggregator, FetchClient, FetchConfig, UserService, AdminData)
 export class AdminService {
 
   fetchClient: FetchClient;
@@ -14,7 +16,8 @@ export class AdminService {
   fetchConfig: FetchConfig;
 
 
-  constructor(ea: EventAggregator, fetchClient: FetchClient, fetchConfig: FetchConfig) {
+  constructor(ea: EventAggregator, fetchClient: FetchClient, fetchConfig: FetchConfig, private userService: UserService,
+              private adminData: AdminData) {
     this.eventAggregator = ea;
     this.fetchClient = fetchClient;
     this.fetchConfig = fetchConfig;
@@ -31,6 +34,9 @@ export class AdminService {
     this.fetchClient.postJSON(authUrl, authBody).then(authResult => {
       if (authResult.success && authResult.token) {
         FetchClient.setAuthToken(authResult.token);
+        this.userService.getUsersById([]).then(users => {
+          this.adminData.allUsers = users;
+        });
         this.eventAggregator.publish(new LoginMessage(AuthRole.ADMIN, true));
       } else {
         const loginEvent = new LoginMessage(AuthRole.ADMIN, false);

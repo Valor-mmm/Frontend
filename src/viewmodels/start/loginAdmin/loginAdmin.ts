@@ -1,6 +1,6 @@
 import {inject, LogManager} from 'aurelia-framework'
 import {EventAggregator} from 'aurelia-event-aggregator';
-import {AdminService} from "../../../services/svc/adminService";
+import {AdminService} from "../../../services/svc/admin/adminService";
 import {ValidationController, ValidationRules} from "aurelia-validation";
 
 const logger = LogManager.getLogger('LoginAdmin');

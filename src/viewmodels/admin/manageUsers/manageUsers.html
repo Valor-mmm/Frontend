@@ -1,3 +1,21 @@
 <template>
-  Manage Users
+  <article class="ui segment container">
+
+    <article class="ui centered piled segment">
+      <article class="ui divided list">
+        <section class="ui item" repeat.for="userWrapper of users">
+          <div class="ui checkbox">
+            <input type="checkbox">
+            <label>${userWrapper.user.username}</label>
+          </div>
+        </section>
+      </article>
+    </article>
+    <section class="ui small buttons">
+      <button class="ui negative button">Delete</button>
+      <div class="or"></div>
+      <button class="ui positive button">Create</button>
+    </section>
+
+  </article>
 </template>
