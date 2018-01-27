@@ -51,7 +51,12 @@ export class NotLoggedIn {
   login() {
     this.validate().then(isValid => {
       if (isValid) {
-        this.userService.authenticate(this.email, this.password);
+        this.userService.authenticate(this.email, this.password).then(() => {
+          logger.info('Authenticated without errors');
+          this.errorMessage = '';
+        }). catch( err => {
+          logger.error('Error during authentication.', err);
+        });
       }
     });
   }

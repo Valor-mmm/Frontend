@@ -44,11 +44,19 @@ export class TweetTimeline {
 
     be.propertyObserver(this.userData, 'loggedInUser').subscribe(newValue => {
       logger.info('Logged in user changed.');
-      if (this.userData && this.userData.loggedInUser) {
-        this.updateTimeline([this.userData.loggedInUser]);
-        this.updateSelectionFlag();
-      }
+      this.update();
     })
+  }
+
+  attached() {
+    this.update();
+  }
+
+  private update() {
+    if (this.userData && this.userData.loggedInUser) {
+      this.updateTimeline([this.userData.loggedInUser]);
+      this.updateSelectionFlag();
+    }
   }
 
   public changeTimeline(users: IUser[], timelineDesc: TimeLineDesc) {

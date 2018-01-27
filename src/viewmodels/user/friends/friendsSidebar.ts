@@ -22,7 +22,7 @@ export class FriendsSidebar {
     this.userData = userData;
 
     ea.subscribe(UpdateSuccess, () => {
-      this.initFreindList();
+      this.initFriendList();
     });
 
     ea.subscribe(SwitchToFriend, switchToFriend => {
@@ -35,6 +35,10 @@ export class FriendsSidebar {
       }
       this.viewTimeline(switchToFriend.friend);
     })
+  }
+
+  attached() {
+    this.initFriendList();
   }
 
   private deactivateFriends() {
@@ -52,7 +56,11 @@ export class FriendsSidebar {
     return true;
   }
 
-  private initFreindList() {
+  private initFriendList() {
+    if (!Array.isArray(this.userData.userFriends)) {
+      return;
+    }
+    
     this.friends = [];
     for (const user of this.userData.userFriends) {
       this.friends.push(new Friend(user));
@@ -137,7 +145,7 @@ export class FriendsSidebar {
   }
 
   displayFirehose() {
-    this.initFreindList();
+    this.initFriendList();
     const timeLineDesc: TimeLineDesc = new TimeLineDesc(false, 'Firehose');
     this.tweetTimeline.changeTimeline(this.userData.allUsers, timeLineDesc);
   }
